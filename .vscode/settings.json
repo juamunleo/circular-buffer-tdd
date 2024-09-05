@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "*.h": "c",
+        "*.c": "c"
+    },
+    "triggerTaskOnSave.tasks": {
+        "unit_test":[
+            "*.c",
+            "*.h"
+        ]
+    },
+    "triggerTaskOnSave.resultIndicator": "statusBar.background",
+    "workbench.colorCustomizations": {}
+}
