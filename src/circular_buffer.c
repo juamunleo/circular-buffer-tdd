@@ -23,8 +23,7 @@ void circular_buffer_write(CircularBuffer_t* p_cb, uint8_t data) {
 }
 
 uint8_t circular_buffer_read(CircularBuffer_t* p_cb) {
-    uint8_t lengthPreRead = circular_buffer_length(p_cb);
-    if(lengthPreRead == 0) return 0;
+    if(circular_buffer_length(p_cb) == 0) return 0;
 
     uint8_t data = p_cb->p_buffer[p_cb->readPos];
     addAvoidingOverflow(&p_cb->readPos, p_cb->size);
