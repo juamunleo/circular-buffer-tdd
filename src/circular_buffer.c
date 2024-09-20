@@ -1,6 +1,6 @@
 #include "circular_buffer.h"
 
-static void addAvoidingOverflow(uint8_t* position, uint8_t size) {
+static void addAvoidingOverflow(uint8_t* position, size_t size) {
     if(*position < (size - 1)) {
         *position += 1;
     } else {
@@ -8,10 +8,12 @@ static void addAvoidingOverflow(uint8_t* position, uint8_t size) {
     }
 }
 
-void circular_buffer_init(CircularBuffer_t* p_cb, uint8_t size) {
+void circular_buffer_init(CircularBuffer_t* p_cb, uint8_t* p_buffer, size_t size) {
+    p_cb->p_buffer = p_buffer;
     p_cb->size = size;
     p_cb->readPos = 0;
     p_cb->writePos = 0;
+    p_cb->isFull = false;
 }
 
 void circular_buffer_write(CircularBuffer_t* p_cb, uint8_t data) {
@@ -31,8 +33,8 @@ uint8_t circular_buffer_read(CircularBuffer_t* p_cb) {
     return data;
 }
 
-uint8_t circular_buffer_length(CircularBuffer_t* p_cb) {
-    uint8_t length;
+size_t circular_buffer_length(CircularBuffer_t* p_cb) {
+    size_t length;
     if(p_cb->readPos < p_cb->writePos) {
         length = p_cb->writePos - p_cb->readPos;
     } else if(p_cb->readPos > p_cb->writePos) {

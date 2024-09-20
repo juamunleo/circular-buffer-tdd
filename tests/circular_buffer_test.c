@@ -10,10 +10,7 @@ TEST_SETUP(CircularBuffer) {
     for(uint_fast8_t i=0; i<sizeof(buffer); i++) {
         buffer[i] = 0;
     }
-    cb = (CircularBuffer_t) {
-        .p_buffer = buffer
-    };
-    circular_buffer_init(&cb, 3);
+    circular_buffer_init(&cb, buffer, sizeof(buffer));
 }
 
 TEST_TEAR_DOWN(CircularBuffer) {
@@ -22,12 +19,12 @@ TEST_TEAR_DOWN(CircularBuffer) {
 
 TEST(CircularBuffer, Initialize) {
     cb = (CircularBuffer_t) {
-        .p_buffer = (uint8_t[3]) {0xFF, 0xFF, 0xFF},
+        .p_buffer = (uint8_t[]) {0xFF, 0xFF, 0xFF},
         .size = 0xFF,
         .readPos = 0xFF,
         .writePos = 0xFF
     };
-    circular_buffer_init(&cb, 3);
+    circular_buffer_init(&cb, buffer, sizeof(buffer));
     TEST_ASSERT_BYTES_EQUAL(3, cb.size);
     TEST_ASSERT_BYTES_EQUAL(0, cb.readPos);
     TEST_ASSERT_BYTES_EQUAL(0, cb.writePos);
