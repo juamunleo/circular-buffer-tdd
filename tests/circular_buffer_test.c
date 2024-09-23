@@ -22,12 +22,14 @@ TEST(CircularBuffer, Initialize) {
         .p_buffer = (BufferType_t[]) {0xFF, 0xFF, 0xFF},
         .size = 0xFF,
         .readPos = 0xFF,
-        .writePos = 0xFF
+        .writePos = 0xFF,
+        .isFull = true
     };
     circular_buffer_init(&cb, buffer, sizeof(buffer)/sizeof(BufferType_t));
-    TEST_ASSERT_BYTES_EQUAL(3, cb.size);
-    TEST_ASSERT_BYTES_EQUAL(0, cb.readPos);
-    TEST_ASSERT_BYTES_EQUAL(0, cb.writePos);
+    TEST_ASSERT_EQUAL(3, cb.size);
+    TEST_ASSERT_EQUAL(0, cb.readPos);
+    TEST_ASSERT_EQUAL(0, cb.writePos);
+    TEST_ASSERT_EQUAL(false, cb.isFull);
 }
 
 TEST(CircularBuffer, WriteOne) {
@@ -39,14 +41,14 @@ TEST(CircularBuffer, WriteOne) {
 TEST(CircularBuffer, ReadOne) {
     circular_buffer_write(&cb, 1);
     uint8_t data = circular_buffer_read(&cb);
-    TEST_ASSERT_BYTES_EQUAL(1, data);
+    TEST_ASSERT_EQUAL(1, data);
 }
 
 TEST(CircularBuffer, WritePosUpdating) {
     circular_buffer_write(&cb, 1);
-    TEST_ASSERT_BYTES_EQUAL(1, cb.writePos);
+    TEST_ASSERT_EQUAL(1, cb.writePos);
     circular_buffer_write(&cb, 1);
-    TEST_ASSERT_BYTES_EQUAL(2, cb.writePos);
+    TEST_ASSERT_EQUAL(2, cb.writePos);
 }
 
 TEST(CircularBuffer, ReadPosUpdating) {
@@ -54,9 +56,9 @@ TEST(CircularBuffer, ReadPosUpdating) {
     circular_buffer_write(&cb, 1);
 
     circular_buffer_read(&cb);
-    TEST_ASSERT_BYTES_EQUAL(1, cb.readPos);
+    TEST_ASSERT_EQUAL(1, cb.readPos);
     circular_buffer_read(&cb);
-    TEST_ASSERT_BYTES_EQUAL(2, cb.readPos);
+    TEST_ASSERT_EQUAL(2, cb.readPos);
 }
 
 TEST(CircularBuffer, Write158) {
@@ -85,38 +87,38 @@ static void fillBufferWithOnes(void) {
 
 TEST(CircularBuffer, WritePosOverflow) {
     fillBufferWithOnes();
-    TEST_ASSERT_BYTES_EQUAL(0, cb.writePos);
+    TEST_ASSERT_EQUAL(0, cb.writePos);
     fillBufferWithOnes();
-    TEST_ASSERT_BYTES_EQUAL(0, cb.writePos);
+    TEST_ASSERT_EQUAL(0, cb.writePos);
     fillBufferWithOnes();
-    TEST_ASSERT_BYTES_EQUAL(0, cb.writePos);
+    TEST_ASSERT_EQUAL(0, cb.writePos);
 }
 
 TEST(CircularBuffer, ReadPosOverflow) {
     fillBufferWithOnes();
-    TEST_ASSERT_BYTES_EQUAL(0, cb.readPos);
+    TEST_ASSERT_EQUAL(0, cb.readPos);
     circular_buffer_read(&cb);
-    TEST_ASSERT_BYTES_EQUAL(1, cb.readPos);
+    TEST_ASSERT_EQUAL(1, cb.readPos);
     circular_buffer_read(&cb);
-    TEST_ASSERT_BYTES_EQUAL(2, cb.readPos);
+    TEST_ASSERT_EQUAL(2, cb.readPos);
     circular_buffer_read(&cb);
-    TEST_ASSERT_BYTES_EQUAL(0, cb.readPos);
+    TEST_ASSERT_EQUAL(0, cb.readPos);
 }
 
 TEST(CircularBuffer, Length) {
-    TEST_ASSERT_BYTES_EQUAL(0, circular_buffer_length(&cb));
+    TEST_ASSERT_EQUAL(0, circular_buffer_length(&cb));
     circular_buffer_write(&cb, 1);
-    TEST_ASSERT_BYTES_EQUAL(1, circular_buffer_length(&cb));
+    TEST_ASSERT_EQUAL(1, circular_buffer_length(&cb));
     circular_buffer_write(&cb, 1);
-    TEST_ASSERT_BYTES_EQUAL(2, circular_buffer_length(&cb));
+    TEST_ASSERT_EQUAL(2, circular_buffer_length(&cb));
     
     circular_buffer_read(&cb);
-    TEST_ASSERT_BYTES_EQUAL(1, circular_buffer_length(&cb));
+    TEST_ASSERT_EQUAL(1, circular_buffer_length(&cb));
     circular_buffer_read(&cb);
-    TEST_ASSERT_BYTES_EQUAL(0, circular_buffer_length(&cb));
+    TEST_ASSERT_EQUAL(0, circular_buffer_length(&cb));
 
     circular_buffer_write(&cb, 1);
-    TEST_ASSERT_BYTES_EQUAL(1, circular_buffer_length(&cb));
+    TEST_ASSERT_EQUAL(1, circular_buffer_length(&cb));
 }
 
 TEST(CircularBuffer, ReadWhenEmpty) {
