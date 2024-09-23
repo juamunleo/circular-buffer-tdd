@@ -3,14 +3,14 @@
 
 TEST_GROUP(CircularBuffer);
 
-static uint8_t buffer[3] = {0};
+static BufferType_t buffer[3] = {0};
 static CircularBuffer_t cb;
 
 TEST_SETUP(CircularBuffer) {
-    for(uint_fast8_t i=0; i<sizeof(buffer); i++) {
+    for(uint_fast8_t i=0; i<sizeof(buffer)/sizeof(BufferType_t); i++) {
         buffer[i] = 0;
     }
-    circular_buffer_init(&cb, buffer, sizeof(buffer));
+    circular_buffer_init(&cb, buffer, sizeof(buffer)/sizeof(BufferType_t));
 }
 
 TEST_TEAR_DOWN(CircularBuffer) {
@@ -19,12 +19,12 @@ TEST_TEAR_DOWN(CircularBuffer) {
 
 TEST(CircularBuffer, Initialize) {
     cb = (CircularBuffer_t) {
-        .p_buffer = (uint8_t[]) {0xFF, 0xFF, 0xFF},
+        .p_buffer = (BufferType_t[]) {0xFF, 0xFF, 0xFF},
         .size = 0xFF,
         .readPos = 0xFF,
         .writePos = 0xFF
     };
-    circular_buffer_init(&cb, buffer, sizeof(buffer));
+    circular_buffer_init(&cb, buffer, sizeof(buffer)/sizeof(BufferType_t));
     TEST_ASSERT_BYTES_EQUAL(3, cb.size);
     TEST_ASSERT_BYTES_EQUAL(0, cb.readPos);
     TEST_ASSERT_BYTES_EQUAL(0, cb.writePos);
@@ -32,7 +32,7 @@ TEST(CircularBuffer, Initialize) {
 
 TEST(CircularBuffer, WriteOne) {
     circular_buffer_write(&cb, 1);
-    TEST_ASSERT_BYTES_EQUAL(1, cb.p_buffer[0]);
+    TEST_ASSERT_EQUAL(1, cb.p_buffer[0]);
 }
 
 
@@ -63,18 +63,18 @@ TEST(CircularBuffer, Write158) {
     circular_buffer_write(&cb, 1);
     circular_buffer_write(&cb, 5);
     circular_buffer_write(&cb, 8);
-    TEST_ASSERT_BYTES_EQUAL(1, cb.p_buffer[0]);
-    TEST_ASSERT_BYTES_EQUAL(5, cb.p_buffer[1]);
-    TEST_ASSERT_BYTES_EQUAL(8, cb.p_buffer[2]);
+    TEST_ASSERT_EQUAL(1, cb.p_buffer[0]);
+    TEST_ASSERT_EQUAL(5, cb.p_buffer[1]);
+    TEST_ASSERT_EQUAL(8, cb.p_buffer[2]);
 }
 
 TEST(CircularBuffer, Read269) {
     circular_buffer_write(&cb, 2);
     circular_buffer_write(&cb, 6);
     circular_buffer_write(&cb, 9);
-    TEST_ASSERT_BYTES_EQUAL(2, circular_buffer_read(&cb));
-    TEST_ASSERT_BYTES_EQUAL(6, circular_buffer_read(&cb));
-    TEST_ASSERT_BYTES_EQUAL(9, circular_buffer_read(&cb));
+    TEST_ASSERT_EQUAL(2, circular_buffer_read(&cb));
+    TEST_ASSERT_EQUAL(6, circular_buffer_read(&cb));
+    TEST_ASSERT_EQUAL(9, circular_buffer_read(&cb));
 }
 
 static void fillBufferWithOnes(void) {
@@ -123,7 +123,7 @@ TEST(CircularBuffer, ReadWhenEmpty) {
     for(uint8_t i=0; i<cb.size; i++) {
         cb.p_buffer[i] = i+1;
     }
-    TEST_ASSERT_BYTES_EQUAL(0, circular_buffer_read(&cb));
+    TEST_ASSERT_EQUAL(0, circular_buffer_read(&cb));
 }
 
 TEST(CircularBuffer, WriteWhenFull) {
@@ -135,7 +135,7 @@ TEST(CircularBuffer, WriteWhenFull) {
     circular_buffer_write(&cb, 6);
     circular_buffer_write(&cb, 7);
     for(uint8_t i=0; i<cb.size; i++) {
-        TEST_ASSERT_BYTES_EQUAL(1, cb.p_buffer[i]);
+        TEST_ASSERT_EQUAL(1, cb.p_buffer[i]);
     }
 }
 
